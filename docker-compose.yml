@@ -11,21 +11,34 @@ services:
       MYSQL_PASSWORD: loginpass
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - mysql_data:/var/lib/mysql
+
+  ui:
+    build: ../app-frontend/
+    restart: always
+    ports:
+      - "8081:80"
 
   api:
     build: .
     restart: always
     ports:
-      - "8081:5000"
+      - "8082:5000"
     environment:
       DB_HOST: mysql
       DB_USER: loginuser
       DB_PASSWORD: loginpass
       DB_NAME: login_db
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    command: npm start
 
 volumes:
   mysql_data:

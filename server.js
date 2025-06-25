@@ -1,14 +1,12 @@
-// server.js
 const express = require('express');
-const bodyParser = require('body-parser');
+const pool = require('./db');
 const authRoutes = require('./routes/auth');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-app.use(bodyParser.json());
+app.use(express.json());
 app.use('/api', authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.locals.db = pool;
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
